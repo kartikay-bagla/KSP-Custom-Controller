@@ -4,6 +4,7 @@ Basic output for adruino is set and we are recieving data from kRPC.
 
 * Add TFT support and 16x2 lcd as well and 7219 module.
 * Add inputs from arduino to KSP.
+* Add Error Handling for Scene Change (Python)
 
 Might need to rope in the UNO centrally controlled by the PI.
 That would essentially give a lot of FPS for us to stuff.
