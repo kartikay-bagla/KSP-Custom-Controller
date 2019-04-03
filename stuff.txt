@@ -1,0 +1,6 @@
+
+https://krpc.github.io/krpc/python/api/space-center/control.html
+https://krpc.github.io/krpc/python/api/space-center/resources.html#SpaceCenter.Resources
+
+stage button - vessel.control.activate_next_stage()
+get current stage - vessel.control.current_stage - gives an int
