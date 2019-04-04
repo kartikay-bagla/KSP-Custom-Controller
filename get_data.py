@@ -4,7 +4,6 @@ import numpy as np
 from utils import process_resources, get_vessel, get_server, get_streams
 
 running = True
-server = None
 
 server = get_server()
 
