@@ -1,4 +1,5 @@
 import serial.tools.list_ports
+import krpc
 
 def select_port():
 	while True:
@@ -18,6 +19,32 @@ def select_port():
 		else:
 			return port
 
+def get_vessel(server):
+    vessel = None
+    while True:
+        try: 
+            vessel = server.space_center.active_vessel
+            break
+
+        except krpc.error.RPCError as e:
+            print("KSP Scene Changed!")
+            time.sleep(1)
+        except ConnectionAbortedError:
+            print("KSP has Disconnected.")
+            running = False #we can now end the program.
+    return vessel
+
+def get_server(address = krpc.DEFAULT_ADDRESS):
+	while server is None:
+        print("Connecting")
+        try:
+            server = krpc.connect(name ='Controller', address= address)
+        except ConnectionRefusedError: #error raised whe failing to connect to the server.
+            print("Server offline")
+            time.sleep(2)
+    time.sleep(1)
+    return server
+		
 def process_altitude(alt):
     alt = round(alt)
     if len(str(alt)) > 6:
@@ -32,6 +59,22 @@ def process_throttle(value):
     t = int(value.decode().strip())
     t = t/1023
     return t
+
+def get_streams(vessel):
+    # Set up streams for telemetry
+    altitude = server.add_stream(getattr, vessel.flight(), 'mean_altitude')
+    apoapsis = server.add_stream(getattr, vessel.orbit, 'apoapsis_altitude')
+    periapsis = server.add_stream(getattr, vessel.orbit, 'periapsis_altitude')
+    resources = server.add_stream(getattr, vessel, "resources")
+    
+    thrust = server.add_stream(getattr, vessel, "thrust")
+    mass = server.add_stream(getattr, vessel, "mass")
+    planet = vessel.orbit.body
+    mu = planet.gravitational_parameter
+    r = planet.equatorial_radius
+    def twr():
+        return (thrust() / (mu * mass()) / (r + altitude()))
+    return altitude, apoapsis, peapsis, resources, twr
 
 main_resources = ["ElectricCharge", "MonoPropellant", "LiquidFuel", "Oxidizer"]
 
